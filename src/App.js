@@ -1,24 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import Product from "./components/Product";
+import SellerPage from "./components/SellerPage";
 
 function App() {
+  const [product, setProduct] = useState([]);
+
+  const handleProductAdd = (product) => {
+    setProduct((prev) => {
+      const newProduct = [...prev, product];
+      const updatedObject = JSON.stringify(newProduct);
+      localStorage.setItem("Product", updatedObject);
+      return newProduct;
+    });
+  };
+
+  const handleProductDelete = (id) => {
+    setProduct((prev) => {
+      const newProduct = prev.filter((item) => item.id !== id);
+
+      localStorage.setItem("Product", JSON.stringify(newProduct));
+      return newProduct;
+    });
+  };
+
+  useEffect(() => {
+    const data = localStorage.getItem("Product");
+    if (data) {
+      const updatedData = JSON.parse(data);
+      setProduct(updatedData);
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <SellerPage onAdd={handleProductAdd} />
+      <Product product={product} handleDelete={handleProductDelete} />
+    </>
   );
 }
 
